@@ -3,13 +3,17 @@ import { Hero } from './hero';
 import { HEROES } from './mock-heroes';
 import { Observable, of } from 'rxjs';
 import { MessageService } from './message.service';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class HeroService {
 
-  constructor(private messageService : MessageService) { 
+  constructor(
+    private messageService : MessageService, 
+    private httpClient : HttpClient
+    ) { 
     //this.messageService = messageService;
   }
 
@@ -20,12 +24,13 @@ export class HeroService {
 
   //This is a asyncronous version of same method
   getHeroes() : Observable< Hero[] > {
-    const heroes = of ( HEROES ); //remmeber the use of "of"
-
+    //const heroes = of ( HEROES ); //remmeber the use of "of"
+   
+    return this.httpClient.get<Hero[]>(this.heroesUrl);
     //send a message using messageservice that we injected
-    this.messageService.add('HeroService: fetched hereos');
+    //this.messageService.add('HeroService: fetched hereos');
 
-    return heroes;
+    //return heroes;
   }
 
   getHero(id: number) : Observable< Hero >   { 
@@ -36,5 +41,11 @@ export class HeroService {
   
     return of(hero);
   }
+
+  log(msg : string){
+    this.messageService.add(`HeroesService : ${msg}`);
+  }
+
+  private heroesUrl = 'api/heroes';
 
 }
